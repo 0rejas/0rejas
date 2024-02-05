@@ -3,7 +3,7 @@
 - 🌱 I’m currently learning como cultivar cannabis
 - 💞️ I’m looking to collaborate on si es con alguna chavalita, en lo que sea ;)
 - 📫 How to reach me: fumandome uno al solecito
-- 😄 Pronouns: Autistic/Fantastic
+- 😄 Pronouns: Young/Beef
 - ⚡ Fun fact: La muerte és inevitable
 
 <!---
