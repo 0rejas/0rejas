@@ -1,53 +1,44 @@
 #!/bin/bash
 
-# Funció per comprovar l'estat d'un servidor remot
-comprova_servidor() {
-    local servidor="$1"
-    local resultat=""
-    
-    # Fem ping als servidors¿?
-    if ping -c 1 "$servidor"; then
-        resultat="Actiu"
+# Funció per comprovar l'estat d'un servidor (ping)
+comprova_estat() {
+    ip=$1
+    local resultat
+
+    # Aquí podriem afegir altres comprovacions com fer un ssh o lagu així del rollo saps
+    ping -c 1 $ip > /dev/null 2>&1
+
+    if [ $? -eq 0 ]; then
+        resultat="OK"
     else
-        resultat="Inactiu"
+        resultat="FAILED"
     fi
 
-    echo "Servidor $servidor: $resultat"
-    echo "Servidor $servidor: $resultat" >> resultats.log
+    echo "Servidor $ip: $resultat"
 }
 
-# Bucle per comprovar l'estat de cada servidor
-comprova_servidors() {
-    for servidor in "$@"; do
-        comprova_servidor "$servidor"
-    done
+# Aquesta és la funció principal
+main() {
+    # Verifiqum si el fitxer ips.txt existeix
+    if [ ! -f ips.txt ]; then
+        echo "Error: No es troba el fitxer ips.txt"
+        exit 1
+    fi
+
+    # Aquest serà el fitxer on es guardarem els resultats obtinguts pels pings
+    resultat_fitxer="resultats.txt"
+
+    # Esborrem el fitxer de resultats en cas de que ja existeixi
+    [ -f $resultat_fitxer ] && rm $resultat_fitxer
+
+    # Realitzaem bucle while per llegir cada IP del nostre fitxer ips.txt
+    while read -r ip || [[ -n "$ip" ]]; do
+	#Truquem a la funció que s'encarrega de fer les comprovacions (pings)
+        comprova_estat "$ip" >> $resultat_fitxer
+    done < "ips.txt"
+
+    echo "Comprovació completada. Resultats guardats a $resultat_fitxer"
 }
 
-# Menú d'opcions
-menu() {
-    cat <<EOF
-Opcions:
-1. Comprovar estat de tots els servidors
-2. Sortir
-EOF
-}
-
-# Bucle principal
-while true; do
-    menu
-    read -p "Selecciona una opció (1-2): " opcio
-
-    case $opcio in
-        1)
-            comprova_servidors "servidor1" "servidor2" "servidor3"
-            ;;
-        2)
-            echo "Adéu!"
-            exit 0
-            ;;
-        *)
-            echo "Opció no vàlida. Si us plau, selecciona una opció vàlida (1-2)."
-            ;;
-    esac
-done
-
+# Executem la funció principal main
+main
